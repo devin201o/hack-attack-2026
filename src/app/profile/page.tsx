@@ -1,60 +1,33 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { supabase } from "@/lib/supabase";
-import type { User } from "@supabase/supabase-js";
+import { AppShell } from "@/components/app-shell";
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        setUser(data.user);
-        setLoading(false);
-      } else {
-        router.push("/login");
-      }
-    });
-  }, [router]);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-black">
-        <p className="text-zinc-500">Loading…</p>
-      </div>
-    );
-  }
-
-  const displayName =
-    user?.user_metadata?.full_name ||
-    user?.user_metadata?.name ||
-    user?.email;
-
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black p-8">
-      <nav className="mb-6 flex items-center">
-        <Link
-          href="/dashboard"
-          className="text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          ← Back to Dashboard
-        </Link>
-      </nav>
-
-      <h1 className="text-2xl font-semibold mb-4">Profile</h1>
-      <p className="text-zinc-700 dark:text-zinc-300">
-        <strong>Name:</strong> {displayName}
-      </p>
-      <p className="text-zinc-700 dark:text-zinc-300">
-        <strong>Email:</strong> {user?.email}
-      </p>
-
-      {/* Add more profile details or editing form here */}
-    </div>
+    <AppShell>
+      <div style={{ padding: "32px 36px", maxWidth: 600 }}>
+        <h1 style={{ color: "#f9fafb", fontFamily: "'Georgia', serif", fontSize: 26, fontWeight: 700, margin: "0 0 28px" }}>Profile</h1>
+        <div style={{ background: "#161820", borderRadius: 14, border: "1px solid #1e2130", padding: 28 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 24 }}>
+            <div style={{
+              width: 64, height: 64, borderRadius: "50%",
+              background: "linear-gradient(135deg, #8b5cf6, #6366f1)",
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, color: "#fff"
+            }}>N</div>
+            <div>
+              <div style={{ color: "#f9fafb", fontSize: 20, fontWeight: 700 }}>Nikola</div>
+              <div style={{ color: "#6b7280", fontSize: 14 }}>Shelter Administrator</div>
+              <div style={{ color: "#f97316", fontSize: 13, marginTop: 2 }}>PawPath Shelter</div>
+            </div>
+          </div>
+          {[["Email", "nikola@pawpath.org"], ["Role", "Administrator"], ["Shelter", "PawPath Animal Rescue"], ["Member since", "January 2024"]].map(([k, v]) => (
+            <div key={k} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderTop: "1px solid #1e2130" }}>
+              <span style={{ color: "#6b7280", fontSize: 14 }}>{k}</span>
+              <span style={{ color: "#d1d5db", fontSize: 14 }}>{v}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </AppShell>
   );
 }
