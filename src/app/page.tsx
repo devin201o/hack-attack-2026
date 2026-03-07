@@ -13,8 +13,10 @@ export default function Home() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
+        // once we know the user is logged in, send them to the dashboard
         setUser(data.user);
         setLoading(false);
+        router.push("/dashboard");
       } else {
         router.push("/signup");
       }
