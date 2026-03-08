@@ -53,7 +53,7 @@ function AnimalsPage({ animals, onSelectAnimal }: {
             background: "#161820", border: "1px solid #2d3148", borderRadius: 8,
             color: "#d1d5db", padding: "9px 14px", fontSize: 14, outline: "none", cursor: "pointer"
           }}>
-            {f.opts.map(o => <option key={o}>{o}</option>)}
+            {f.opts.map((o, idx) => <option key={`${f.label}-${idx}`} value={o}>{o}</option>)}
           </select>
         ))}
         <button style={{
