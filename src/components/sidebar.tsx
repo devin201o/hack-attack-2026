@@ -15,7 +15,13 @@ export function Sidebar() {
 
   return (
     <aside style={{
-      width: 220, minHeight: "100vh", background: "#0f1117",
+      width: 220,
+      height: "100vh",
+      position: "sticky",
+      top: 0,
+      alignSelf: "flex-start",
+      overflowY: "auto",
+      background: "#0f1117",
       display: "flex", flexDirection: "column",
       borderRight: "1px solid #1e2130", flexShrink: 0
     }}>
