@@ -68,8 +68,8 @@ function AnimalsPage({ animals, onSelectAnimal }: {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid #1e2130" }}>
-              {["Animal", "Breed", "Age", "Gender", "Animal Type", "Lnving Environment", "Status", ""].map(h => (
-                <th key={h} style={{ padding: "12px 16px", color: "#6b7280", fontSize: 12, fontWeight: 600, textAlign: "left", textTransform: "uppercase", letterSpacing: 0.5 }}>{h}</th>
+              {["Animal", "Breed", "Age", "Gender", "Animal Type", "Lnving Environment", "Status", ""].map((h, idx) => (
+                <th key={h || `header-${idx}`} style={{ padding: "12px 16px", color: "#6b7280", fontSize: 12, fontWeight: 600, textAlign: "left", textTransform: "uppercase", letterSpacing: 0.5 }}>{h}</th>
               ))}
             </tr>
           </thead>
