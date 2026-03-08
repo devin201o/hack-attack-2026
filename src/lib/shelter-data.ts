@@ -31,6 +31,16 @@ export const SCHEDULED_POSTS = [
 
 export type ScheduledPost = typeof SCHEDULED_POSTS[0];
 
+export const NONPROFIT_EVENTS = [
+  { id: 1, name: "Adopt-a-Thon Weekend", date: "2026-03-22", description: "A weekend-long adoption event with reduced fees and meet-and-greets for all available cats." },
+  { id: 2, name: "Paws & Paint Night", date: "2026-04-05", description: "A fun fundraiser where attendees paint portraits of shelter cats while enjoying refreshments." },
+  { id: 3, name: "Whiskers & Wine Gala", date: "2026-04-18", description: "An evening charity gala to raise funds for medical care and shelter improvements." },
+  { id: 4, name: "Community Cat Care Workshop", date: "2026-05-01", description: "Free workshop teaching TNR basics, cat first-aid, and responsible pet ownership." },
+  { id: 5, name: "Foster Family Appreciation Day", date: "2026-05-10", description: "Celebrating our amazing foster families with a picnic, awards, and kitten cuddle sessions." },
+];
+
+export type NonprofitEvent = typeof NONPROFIT_EVENTS[0];
+
 export const STATUS_COLORS = {
   Available: { bg: "#d1fae5", text: "#065f46", dot: "#10b981" },
   Pending:   { bg: "#fef3c7", text: "#92400e", dot: "#f59e0b" },
