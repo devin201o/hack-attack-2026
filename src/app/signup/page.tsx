@@ -18,11 +18,7 @@ export default function SignUpPage() {
   function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
     setLogo(file);
-    if (file) {
-      setLogoPreview(URL.createObjectURL(file));
-    } else {
-      setLogoPreview(null);
-    }
+    setLogoPreview(file ? URL.createObjectURL(file) : null);
   }
 
   async function handleSignUp(e: React.FormEvent) {
@@ -30,14 +26,38 @@ export default function SignUpPage() {
     setError("");
     setLoading(true);
 
-    // 1. Sign up with org metadata
+    // 1. Upload logo first (before auth exists)
+    let logoUrl = "";
+    if (logo) {
+      const ext = logo.name.split(".").pop();
+      const tempPath = `temp/${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("logos")
+        .upload(tempPath, logo, { upsert: true });
+
+      if (uploadError) {
+        setError("Logo upload failed: " + uploadError.message);
+        setLoading(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("logos")
+        .getPublicUrl(tempPath);
+
+      logoUrl = urlData.publicUrl;
+    }
+
+    // 2. Sign up with all metadata including logo_url baked in
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
-          shelter: orgName,       // org name → user_metadata.shelter
-          full_name: orgName,     // used for display name fallback
+          full_name: orgName,
+          shelter: orgName,
+          logo_url: logoUrl,
         },
       },
     });
@@ -46,27 +66,6 @@ export default function SignUpPage() {
       setError(signUpError.message);
       setLoading(false);
       return;
-    }
-
-    // 2. Upload logo if provided (requires a public "logos" bucket in Supabase Storage)
-    if (logo && data.user) {
-      const ext = logo.name.split(".").pop();
-      const path = `${data.user.id}/logo.${ext}`;
-
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("logos")
-        .upload(path, logo, { upsert: true });
-
-      if (!uploadError && uploadData) {
-        const { data: urlData } = supabase.storage
-          .from("logos")
-          .getPublicUrl(path);
-
-        // Store logo URL back into user_metadata
-        await supabase.auth.updateUser({
-          data: { logo_url: urlData.publicUrl },
-        });
-      }
     }
 
     if (data.session) {
@@ -103,7 +102,7 @@ export default function SignUpPage() {
         onSubmit={handleSignUp}
         className="flex w-full max-w-sm flex-col gap-4 rounded-xl bg-white p-8 shadow dark:bg-zinc-900"
       >
-        <h1 className="text-center text-2xl font-semibold text-black dark:text-white">Register Organization</h1>
+        <h1 className="text-2xl font-semibold text-black dark:text-white">Register Organisation</h1>
 
         {error && (
           <p className="rounded bg-red-100 px-3 py-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-400">
@@ -111,14 +110,13 @@ export default function SignUpPage() {
           </p>
         )}
 
-        {/* Logo upload — optional */}
+        {/* Logo — optional */}
         <div className="flex flex-col gap-1 text-sm text-zinc-700 dark:text-zinc-300">
           <span>Logo <span className="text-zinc-400">(optional)</span></span>
           <div className="flex items-center gap-4">
-            {/* Preview */}
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-zinc-300 bg-zinc-100 overflow-hidden dark:border-zinc-700 dark:bg-zinc-800">
               {logoPreview ? (
-                <img src={logoPreview} alt="Logo preview" className="h-full w-full object-cover" />
+                <img src={logoPreview} alt="Preview" className="h-full w-full object-cover" />
               ) : (
                 <span className="text-xl text-zinc-400">🏠</span>
               )}
@@ -136,7 +134,7 @@ export default function SignUpPage() {
               <button
                 type="button"
                 onClick={() => { setLogo(null); setLogoPreview(null); }}
-                className="cursor-pointer text-xs text-zinc-400 hover:text-red-500"
+                className="text-xs text-zinc-400 hover:text-red-500"
               >
                 Remove
               </button>
@@ -145,7 +143,7 @@ export default function SignUpPage() {
         </div>
 
         <label className="flex flex-col gap-1 text-sm text-zinc-700 dark:text-zinc-300">
-          Organization Name
+          Organisation Name
           <input
             type="text"
             required

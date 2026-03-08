@@ -1,12 +1,34 @@
 ﻿"use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
-import { AnimalCard } from "@/components/animal-card";
 import { ANIMALS, APPLICATIONS } from "@/lib/shelter-data";
+import { supabase } from "@/lib/supabase";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const [displayName, setDisplayName] = useState("there");
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
+      const user = data.user;
+      const name =
+        user?.user_metadata?.full_name ||
+        user?.user_metadata?.name ||
+        user?.user_metadata?.shelter ||
+        user?.email?.split("@")[0] ||
+        "there";
+      setDisplayName(name);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const available = ANIMALS.filter(a => a.status === "Available").length;
   const pending = ANIMALS.filter(a => a.status === "Pending").length;
@@ -15,7 +37,9 @@ export default function DashboardPage() {
     <AppShell>
       <div style={{ padding: "32px 36px", maxWidth: 1100 }}>
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ color: "#f9fafb", fontFamily: "'Georgia', serif", fontSize: 28, fontWeight: 700, margin: 0 }}>Good morning 🌤️</h1>
+          <h1 style={{ color: "#f9fafb", fontFamily: "'Georgia', serif", fontSize: 28, fontWeight: 700, margin: 0 }}>
+            Hello, {displayName}
+          </h1>
           <p style={{ color: "#6b7280", marginTop: 6, fontSize: 15 }}>{"Here's what's happening at the shelter today."}</p>
         </div>
 
@@ -66,27 +90,7 @@ export default function DashboardPage() {
             </button>
           ))}
         </div>
-
-        {/* Animal Cards */}
-        <div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2 style={{ color: "#f9fafb", fontSize: 18, fontWeight: 600, margin: 0 }}>Adoption Animals</h2>
-          <button onClick={() => router.push("/animal-management")} style={{
-            background: "none", border: "none", color: "#f97316", cursor: "pointer", fontSize: 13, fontWeight: 500
-          }}>View all →</button>
         </div>
-        <div style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16,
-          overflowY: "auto", maxHeight: 480, paddingBottom: 8
-        }}>
-          {ANIMALS.map(animal => (
-            <AnimalCard
-              key={animal.id}
-              animal={animal}
-              onClick={() => router.push(`/animal-management?id=${animal.id}`)}
-            />
-          ))}
-        </div>
-      </div>
     </AppShell>
   );
 }
