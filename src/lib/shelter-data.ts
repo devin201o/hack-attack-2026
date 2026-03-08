@@ -23,6 +23,14 @@ export const CONTENT_HISTORY = [
   { id: 3, animalId: 3, type: "Social Post", date: "2025-03-01", preview: "🍪 Biscuit is breaking hearts at the shelter! This fluffy little troublemaker..." },
 ];
 
+export const SCHEDULED_POSTS = [
+  { id: 1, animalId: 1, type: "Social Post", platform: "Instagram", scheduledDate: "2026-03-10", time: "10:00 AM", preview: "🍊 Meet Mango! This sunshine-colored tabby is ready to steal your heart..." },
+  { id: 2, animalId: 6, type: "Social Post", platform: "Facebook", scheduledDate: "2026-03-12", time: "2:00 PM", preview: "🐾 Ozzy the gentle giant is looking for a cozy window seat in your home..." },
+  { id: 3, animalId: 8, type: "Email Campaign", platform: "Email", scheduledDate: "2026-03-15", time: "9:00 AM", preview: "This week's spotlight: Noodle the hairless wonder is waiting for her cuddle buddy..." },
+];
+
+export type ScheduledPost = typeof SCHEDULED_POSTS[0];
+
 export const STATUS_COLORS = {
   Available: { bg: "#d1fae5", text: "#065f46", dot: "#10b981" },
   Pending:   { bg: "#fef3c7", text: "#92400e", dot: "#f59e0b" },
